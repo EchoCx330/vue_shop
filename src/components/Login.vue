@@ -56,12 +56,16 @@ export default {
     //表单预验证
 
     login() {
-     setTimeout( () => {
-       this.$router.push({
-         path:'/home'
-       })
-     },1000)
-      return this.$message.success("登陆成功");
+     this.$refs.loginFormRef.validate(async valid => {
+       if (!valid) return;
+       const {data:res} = await this.$http.post("login",this.loginForm);
+       if(res.meta.status !== 200) return this.$message.error("登录失败！");
+       window.sessionStorage.setItem("token",res.data.token);
+       setTimeout(() => {
+         this.$router.push('/home')
+       },1000)
+       return this.$message.success("登录成功！");
+     })
     }
   }
 }
